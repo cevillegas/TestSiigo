@@ -1,0 +1,74 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'net.serenity-bdd.aggregator'
+
+version '1.0-SNAPSHOT'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenLocal()
+    jcenter()
+    mavenCentral()
+}
+
+serenity {
+    reports = ["single-page-html"]
+}
+
+buildscript {
+    repositories {
+        mavenLocal()
+        jcenter()
+    }
+    dependencies {
+        classpath("net.serenity-bdd:serenity-gradle-plugin:2.3.31")
+        classpath "net.serenity-bdd:serenity-single-page-report:2.1.4"
+    }
+}
+
+ext{
+    serenityVersion = '3.1.16'
+    serenityCucumberVersion = '3.1.16'
+    cucumberVersion = '7.2.3'
+}
+
+test {
+    testLogging.showStandardStreams = true
+    testLogging.exceptionFormat = 'full'
+    systemProperties = System.properties as Map<String, ?>
+}
+
+configurations.all {
+    resolutionStrategy {
+        force "io.cucumber:cucumber-core:$rootProject.ext.cucumberVersion"
+    }
+}
+
+dependencies {
+    implementation group: 'org.slf4j', name: 'slf4j-log4j12', version: '2.0.0-alpha1'
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.0-alpha1'
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.assertj:assertj-core:3.22.0'
+
+    implementation "net.serenity-bdd:serenity-core:$rootProject.ext.serenityVersion"
+    implementation "net.serenity-bdd:serenity-junit:$rootProject.ext.serenityVersion"
+    implementation "net.serenity-bdd:serenity-screenplay:$rootProject.ext.serenityVersion"
+
+    implementation "net.serenity-bdd:serenity-cucumber:$rootProject.ext.serenityCucumberVersion"
+    implementation "io.cucumber:cucumber-core:$rootProject.ext.cucumberVersion"
+    implementation "io.cucumber:cucumber-junit:$rootProject.ext.cucumberVersion"
+    implementation "io.cucumber:cucumber-java:$rootProject.ext.cucumberVersion"
+
+    testImplementation "net.serenity-bdd:serenity-ensure:$rootProject.ext.serenityVersion"
+    implementation "net.serenity-bdd:serenity-screenplay-webdriver:$rootProject.ext.serenityVersion"
+    implementation "net.serenity-bdd:serenity-ensure:$rootProject.ext.serenityVersion"
+}
+
+gradle.startParameter.continueOnFailure = false
+
